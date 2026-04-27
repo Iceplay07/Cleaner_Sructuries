@@ -166,8 +166,9 @@ std::vector<std::string> Scaner::Read_Mean_Lines(std::filesystem::path &path){
   }
   std::string line;
   while(std::getline(in, line)){
-    if(!Is_Space(line) && Norm_Line(line)[0] != '#'){
-      res.push_back(line);
+    std::string norm = Norm_Line(line);
+    if(!norm.empty() && norm[0] != '#'){
+      res.push_back(norm);
     }
   }
   return res;
