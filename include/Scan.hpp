@@ -30,6 +30,7 @@ private:
   double similarity_;
 
   bool Is_Code_File(std::filesystem::path &path);
+  bool Is_Ignored_Dir(const std::filesystem::path &path);
   bool Can_Compare_Similar(std::filesystem::path &a, std::filesystem::path &b);
 
   std::string Read_Full_File(std::filesystem::path &path);

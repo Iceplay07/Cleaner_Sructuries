@@ -46,7 +46,7 @@ bool Scaner::Is_Code_File(std::filesystem::path &path){
         //".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
 
         // исполняемые и бинарные
-        ".exe", ".dll", ".so", ".bin", ".obj", ".o", ".class", ".jar"
+        ".exe", ".dll", ".so", ".bin", ".obj", ".o", ".class", ".jar", ".out", ".a", ".dylib"
     };
 
     for (const auto& banned : ban) {
@@ -58,6 +58,20 @@ bool Scaner::Is_Code_File(std::filesystem::path &path){
     return true;
 }
 
+
+bool Scaner::Is_Ignored_Dir(const std::filesystem::path &path) {
+  static const std::vector<std::string> ignored = {
+      "venv", ".venv", "__pycache__", "node_modules", ".git"
+  };
+  for (const auto &part : path) {
+    for (const auto &name : ignored) {
+      if (part.string() == name) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 bool Scaner::Can_Compare_Similar(std::filesystem::path &a, std::filesystem::path &b) {
   std::string ea = a.extension().string();
@@ -104,6 +118,12 @@ std::vector<Scaner::FileInfo> Scaner::Scan(std::filesystem::path &root) {
     }
 
     auto &entry = *it;
+
+    if (entry.is_directory(ec) && Is_Ignored_Dir(entry.path())) {
+      it.disable_recursion_pending();
+      ec.clear();
+      continue;
+    }
 
     if (!entry.is_regular_file(ec)) {
       ec.clear();
